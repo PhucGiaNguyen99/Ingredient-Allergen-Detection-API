@@ -1,9 +1,22 @@
 import spacy
+import re
 from spacy.matcher import PhraseMatcher
 
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en_core_web_md")
+
+
 
 def detect_allergens_spacy(text, allergen_list):
+    def split_compound_words(text):
+        # crude way to split lowercase compound words using known allergens
+        for allergen in allergen_list:
+            pattern = re.compile(f"({allergen})", re.IGNORECASE)
+            text = pattern.sub(r" \1 ", text)  # add spaces before and after the allergen
+        return text
+    
+    # Split the compound word
+    text = split_compound_words(text)
+
     # Process the input text
     doc = nlp(text)
     detected = set()
